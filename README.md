@@ -30,10 +30,12 @@ Copiar y completar los ejemplos:
 - `BACKEND_URL` = http://localhost:8000
 
 Scopes Google utilizados:
+- openid
+- https://www.googleapis.com/auth/userinfo.email
+- https://www.googleapis.com/auth/userinfo.profile
 - https://www.googleapis.com/auth/classroom.courses.readonly
-- https://www.googleapis.com/auth/classroom.coursework.me.readonly
-- https://www.googleapis.com/auth/classroom.coursework.students.readonly
-- https://www.googleapis.com/auth/calendar.readonly
+- https://www.googleapis.com/auth/classroom.rosters.readonly
+- https://www.googleapis.com/auth/classroom.student-submissions.students.readonly
 
 ### Backend (FastAPI)
 
