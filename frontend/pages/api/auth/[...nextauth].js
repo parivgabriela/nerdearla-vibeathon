@@ -13,12 +13,11 @@ export const authOptions = {
           response_type: "code",
           scope: [
             "openid",
-            "email",
-            "profile",
+            "https://www.googleapis.com/auth/userinfo.email",
+            "https://www.googleapis.com/auth/userinfo.profile",
             "https://www.googleapis.com/auth/classroom.courses.readonly",
-            "https://www.googleapis.com/auth/classroom.coursework.me.readonly",
-            "https://www.googleapis.com/auth/classroom.coursework.students.readonly",
-            "https://www.googleapis.com/auth/calendar.readonly",
+            "https://www.googleapis.com/auth/classroom.rosters.readonly",
+            "https://www.googleapis.com/auth/classroom.student-submissions.students.readonly"
           ].join(" "),
         },
       },
