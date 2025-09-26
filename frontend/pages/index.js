@@ -1,0 +1,51 @@
+import { signIn, signOut, useSession } from "next-auth/react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import axios from "axios";
+
+export default function Home() {
+  const { data: session, status } = useSession();
+  const [role, setRole] = useState(null);
+
+  useEffect(() => {
+    const resolveRole = async () => {
+      if (session?.user?.email) {
+        try {
+          const res = await axios.post("/api/role", { email: session.user.email });
+          setRole(res.data.role);
+        } catch (e) {
+          console.error("Error resolving role:", e);
+        }
+      }
+    };
+    resolveRole();
+  }, [session?.user?.email]);
+
+  if (status === "loading") {
+    return <p>Cargando...</p>;
+  }
+
+  if (!session) {
+    return (
+      <main className="container">
+        <h1>Semillero Digital Platform</h1>
+        <p>Complemento de Google Classroom</p>
+        <button onClick={() => signIn("google")}>Ingresar con Google</button>
+      </main>
+    );
+  }
+
+  return (
+    <main className="container">
+      <h1>Bienvenido/a</h1>
+      <p>
+        {session.user?.name} ({session.user?.email})
+      </p>
+      <p>Rol: {role || "resolviendo..."}</p>
+      <div className="actions">
+        <Link href="/dashboard">Ir al Dashboard</Link>
+      </div>
+      <button onClick={() => signOut()}>Cerrar sesión</button>
+    </main>
+  );
+}
