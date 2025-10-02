@@ -51,7 +51,6 @@ export default function Home() {
       <div className="actions">
         <Link href="/dashboard">Ir al Dashboard</Link>
       </div>
-      <button onClick={() => signOut()}>Cerrar sesión</button>
     </main>
   );
 }
