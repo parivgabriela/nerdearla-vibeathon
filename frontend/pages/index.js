@@ -12,6 +12,12 @@ export default function Home() {
       if (session?.user?.email) {
         try {
           const res = await axios.post("/api/role", { email: session.user.email });
+          // Persist backend user id for Etapa 2 flows (courses/students)
+          if (res?.data?.id) {
+            try {
+              localStorage.setItem("backendUserId", String(res.data.id));
+            } catch {}
+          }
           setRole(res.data.role);
         } catch (e) {
           console.error("Error resolving role:", e);
@@ -49,3 +55,4 @@ export default function Home() {
     </main>
   );
 }
+

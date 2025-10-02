@@ -36,8 +36,23 @@ button {
 }
 button:hover { opacity: 0.9; }
 
-.header { display: flex; align-items: center; justify-content: space-between; }
+.header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .list { list-style: none; padding: 0; margin: 0; }
 .list-item { padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
 .muted { color: var(--muted); font-size: 0.9rem; }
 .error { color: #ef4444; }
+
+/* NAVIGATION */
+.nav { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+.nav a, .btn-link {
+  display: inline-block;
+  background: rgba(255,255,255,0.1);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 8px;
+  text-decoration: none;
+}
+.nav a:hover, .btn-link:hover { background: rgba(255,255,255,0.16); }
+
+/* UTILS */
+.row { display: flex; align-items: center; gap: 8px; }
