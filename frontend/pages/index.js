@@ -2,6 +2,7 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import Skeleton from "../components/Skeleton";
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -28,7 +29,14 @@ export default function Home() {
   }, [session?.user?.email]);
 
   if (status === "loading") {
-    return <p>Cargando...</p>;
+    return (
+      <main className="container">
+        <h1 className="mb-2">Cargando...</h1>
+        <Skeleton className="h-5 w-1/2 mb-2" />
+        <Skeleton className="h-4 w-2/3 mb-2" />
+        <Skeleton className="h-10 w-40" />
+      </main>
+    );
   }
 
   if (!session) {

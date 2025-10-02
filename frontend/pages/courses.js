@@ -2,6 +2,11 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { coursesAPI } from "../utils/api";
+import Button from "../components/Button";
+import EmptyState from "../components/EmptyState";
+import Skeleton from "../components/Skeleton";
+import ConfirmModal from "../components/ConfirmModal";
+import CourseCard from "../components/CourseCard";
 
 export default function Courses() {
   const { data: session, status } = useSession();
@@ -16,6 +21,8 @@ export default function Courses() {
     teacher_id: "",
   });
   const [currentUserId, setCurrentUserId] = useState(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [toDeleteId, setToDeleteId] = useState(null);
 
   useEffect(() => {
     // Load backend user id stored in index.js
@@ -69,14 +76,26 @@ export default function Courses() {
     }
   };
 
-  const handleDelete = async (courseId) => {
-    if (!confirm("¿Estás seguro de que deseas eliminar este curso?")) return;
+  const requestDelete = (courseId) => {
+    setToDeleteId(courseId);
+    setConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!toDeleteId) return;
     try {
-      await coursesAPI.delete(courseId);
+      await coursesAPI.delete(toDeleteId);
+      setConfirmOpen(false);
+      setToDeleteId(null);
       loadCourses();
     } catch (e) {
       setError(e.response?.data?.detail || "Error al eliminar curso");
     }
+  };
+
+  const cancelDelete = () => {
+    setConfirmOpen(false);
+    setToDeleteId(null);
   };
 
   const startEdit = (course) => {
@@ -93,7 +112,16 @@ export default function Courses() {
     setFormData({ name: "", description: "", teacher_id: "" });
   };
 
-  if (status === "loading") return <p>Cargando...</p>;
+  if (status === "loading") return (
+    <main className="container">
+      <h1 className="mb-4">Gestión de Cursos</h1>
+      <div className="grid gap-3">
+        <Skeleton className="h-24 w-full" />
+        <Skeleton className="h-24 w-full" />
+        <Skeleton className="h-24 w-full" />
+      </div>
+    </main>
+  );
   if (!session) {
     return (
       <main className="container">
@@ -107,17 +135,11 @@ export default function Courses() {
     <main className="container">
       <header className="header">
         <h1>Gestión de Cursos</h1>
-        <div>
-          <span>{session.user?.email}</span>
-          <Link href="/dashboard">Dashboard</Link>
-        </div>
       </header>
 
       <section>
-        <div className="actions">
-          <button onClick={() => setShowCreateForm(true)}>
-            Crear Nuevo Curso
-          </button>
+        <div className="flex justify-end mb-4">
+          <Button onClick={() => setShowCreateForm(true)}>Crear Nuevo Curso</Button>
         </div>
 
         {error && <p className="error">{error}</p>}
@@ -200,28 +222,40 @@ export default function Courses() {
         )}
 
         {/* Courses List */}
-        <div className="courses-list">
-          <h2>Cursos</h2>
-          {courses.length === 0 && !loading && <p>No hay cursos disponibles</p>}
-          {courses.map((course) => (
-            <div key={course.id} className="course-card">
-              <div className="course-header">
-                <h3>{course.name}</h3>
-                <div className="course-actions">
-                  <button onClick={() => startEdit(course)}>Editar</button>
-                  <button onClick={() => handleDelete(course.id)}>Eliminar</button>
-                </div>
-              </div>
-              <p className="course-description">{course.description || "Sin descripción"}</p>
-              <div className="course-meta">
-                <span>Profesor: {course.teacher.email}</span>
-                <span>Estudiantes: {course.enrollment_count}</span>
-                <span>Tareas: {course.assignment_count}</span>
-              </div>
+        <div className="mt-6">
+          <h2 className="text-xl font-semibold mb-3">Cursos</h2>
+          {loading && (
+            <div className="grid gap-3">
+              <Skeleton className="h-24 w-full" />
+              <Skeleton className="h-24 w-full" />
             </div>
-          ))}
+          )}
+          {!loading && courses.length === 0 && (
+            <EmptyState
+              title="No hay cursos disponibles"
+              description="Crea tu primer curso para comenzar a gestionar estudiantes y tareas."
+              actionLabel="Crear Curso"
+              onAction={() => setShowCreateForm(true)}
+            />
+          )}
+          {!loading && courses.length > 0 && (
+            <div className="grid gap-3">
+              {courses.map((course) => (
+                <CourseCard key={course.id} course={course} onEdit={startEdit} onDelete={requestDelete} />
+              ))}
+            </div>
+          )}
         </div>
       </section>
+      <ConfirmModal
+        open={confirmOpen}
+        title="Eliminar curso"
+        description="Esta acción eliminará el curso. ¿Deseas continuar?"
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+      />
     </main>
   );
 }
