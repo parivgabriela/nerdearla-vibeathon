@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .config import settings
 from .db import init_db
-from .routers import users
+from . import routers
 from .schemas import HealthResponse
 
 
@@ -25,7 +25,12 @@ def create_app() -> FastAPI:
     def health():
         return HealthResponse()
 
-    app.include_router(users.router)
+    app.include_router(routers.users_router)
+    app.include_router(routers.courses_router)
+    app.include_router(routers.enrollments_router)
+    app.include_router(routers.assignments_router)
+    app.include_router(routers.announcements_router)
+    app.include_router(routers.notifications_router)
 
     return app
 
