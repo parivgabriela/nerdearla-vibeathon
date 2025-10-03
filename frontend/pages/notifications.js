@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { notificationsAPI, announcementsAPI } from "../utils/api";
+import InPageMenu from "../components/InPageMenu";
 
 export default function NotificationsCenter() {
   const { data: session, status } = useSession();
@@ -78,12 +79,11 @@ export default function NotificationsCenter() {
 
   return (
     <main className="container">
+      <div className="flex justify-end mb-3">
+        <InPageMenu />
+      </div>
       <header className="header">
         <h1>Centro de Notificaciones</h1>
-        <nav className="nav">
-          <Link href="/dashboard" className="btn-link">Dashboard</Link>
-          <Link href="/" className="btn-link">Inicio</Link>
-        </nav>
       </header>
 
       {error && <p className="error">{error}</p>}

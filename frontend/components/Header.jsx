@@ -33,34 +33,42 @@ export default function Header() {
   const initial = userLabel.charAt(0).toUpperCase();
 
   return (
-    <div className="flex items-center justify-between px-4 py-2 bg-slate-900">
-      <div className="flex items-center gap-2">
-        <Link href="/" className="btn-link">Inicio</Link>
-        <Link href="/dashboard" className="btn-link">Dashboard</Link>
-        <Link href="/notifications" className="btn-link relative">
-          Notificaciones
-          {count ? (
-            <span className="ml-2 inline-flex items-center justify-center rounded-full bg-red-600 text-white text-xs px-2 py-0.5">{count}</span>
-          ) : null}
-        </Link>
-      </div>
-      <div className="relative">
-        <button
-          className="flex items-center gap-2 rounded-full bg-white/10 px-2 py-1 hover:bg-white/15"
-          onClick={() => setMenuOpen((v) => !v)}
-        >
-          <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-accent text-white font-semibold">{initial}</span>
-          <span className="text-sm text-[var(--text)] hidden sm:inline">{userLabel}</span>
-        </button>
-        {menuOpen && (
-          <div className="absolute right-0 mt-2 w-48 rounded-lg bg-[var(--card)] p-2 shadow-card z-50">
-            <Link href="/" className="block rounded-md px-3 py-2 hover:bg-white/10">Inicio</Link>
-            <Link href="/dashboard" className="block rounded-md px-3 py-2 hover:bg-white/10">Dashboard</Link>
-            <button className="w-full text-left rounded-md px-3 py-2 hover:bg-white/10" onClick={() => signOut()}>
-              Cerrar sesión
-            </button>
-          </div>
-        )}
+    <div className="sticky top-0 z-40 bg-slate-900/80 backdrop-blur border-b border-white/10">
+      <div className="mx-auto max-w-7xl px-4 py-2 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Link href="/" className="btn-link">Inicio</Link>
+          <Link href="/dashboard" className="btn-link">Dashboard</Link>
+          <Link href="/notifications" className="btn-link relative">
+            Notificaciones
+            {count ? (
+              <span className="ml-2 inline-flex items-center justify-center rounded-full bg-red-600 text-white text-xs px-2 py-0.5">{count}</span>
+            ) : null}
+          </Link>
+        </div>
+        <div className="relative">
+          <button
+            className="flex items-center gap-2 rounded-full bg-white/10 px-2 py-1 hover:bg-white/15"
+            onClick={() => setMenuOpen((v) => !v)}
+            aria-haspopup="menu"
+            aria-expanded={menuOpen}
+          >
+            <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-accent text-white font-semibold">{initial}</span>
+            <span className="text-sm text-[var(--text)] hidden sm:inline">{userLabel}</span>
+          </button>
+          {menuOpen && (
+            <div
+              className="absolute right-0 mt-2 w-56 max-w-[calc(100vw-1rem)] rounded-lg bg-[var(--card)]/95 p-2 shadow-xl ring-1 ring-white/10 backdrop-blur z-50 max-h-[min(60vh,20rem)] overflow-auto"
+              role="menu"
+              aria-orientation="vertical"
+            >
+              <Link href="/" className="block rounded-md px-3 py-2 text-sm hover:bg-white/10 focus:bg-white/10 focus:outline-none">Inicio</Link>
+              <Link href="/dashboard" className="block rounded-md px-3 py-2 text-sm hover:bg-white/10 focus:bg-white/10 focus:outline-none">Dashboard</Link>
+              <button className="w-full text-left rounded-md px-3 py-2 text-sm hover:bg-white/10 focus:bg-white/10 focus:outline-none" onClick={() => signOut()}>
+                Cerrar sesión
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

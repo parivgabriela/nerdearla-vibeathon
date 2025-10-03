@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import InPageMenu from "../components/InPageMenu";
 import { coursesAPI, assignmentsAPI, submissionsAPI } from "../utils/api";
 
 export default function Assignments() {
@@ -25,6 +26,31 @@ export default function Assignments() {
     loadData();
   }, [session]);
 
+  const normalizeError = (e) => {
+    try {
+      const detail = e?.response?.data?.detail ?? e?.data?.detail;
+      if (detail) {
+        if (typeof detail === "string") return detail;
+        if (Array.isArray(detail)) {
+          const msgs = detail
+            .map((d) => (d && typeof d === "object" ? d.msg || d.message : d))
+            .filter(Boolean);
+          if (msgs.length) return msgs.join(" | ");
+          return JSON.stringify(detail);
+        }
+        if (typeof detail === "object") {
+          if (detail.msg || detail.message) return detail.msg || detail.message;
+          return JSON.stringify(detail);
+        }
+        return String(detail);
+      }
+      if (e?.message) return e.message;
+      return "Error inesperado";
+    } catch {
+      return "Error inesperado";
+    }
+  };
+
   const loadData = async () => {
     if (!session) return;
     setLoading(true);
@@ -39,7 +65,7 @@ export default function Assignments() {
       setAssignments(assignmentsData);
       setSubmissions(submissionsData);
     } catch (e) {
-      setError(e.response?.data?.detail || "Error al cargar datos");
+      setError(normalizeError(e));
     } finally {
       setLoading(false);
     }
@@ -59,7 +85,7 @@ export default function Assignments() {
       setFormData({ title: "", description: "", course_id: "", due_date: "", max_score: "" });
       loadData();
     } catch (e) {
-      setError(e.response?.data?.detail || "Error al crear tarea");
+      setError(normalizeError(e));
     }
   };
 
@@ -76,7 +102,7 @@ export default function Assignments() {
       setFormData({ title: "", description: "", course_id: "", due_date: "", max_score: "" });
       loadData();
     } catch (e) {
-      setError(e.response?.data?.detail || "Error al actualizar tarea");
+      setError(normalizeError(e));
     }
   };
 
@@ -86,7 +112,7 @@ export default function Assignments() {
       await assignmentsAPI.delete(assignmentId);
       loadData();
     } catch (e) {
-      setError(e.response?.data?.detail || "Error al eliminar tarea");
+      setError(normalizeError(e));
     }
   };
 
@@ -126,13 +152,13 @@ export default function Assignments() {
 
   return (
     <main className="container">
+      <div className="flex justify-end mb-3">
+        <InPageMenu />
+      </div>
       <header className="header">
         <h1>Gestión de Tareas</h1>
         <div>
           <span>{session.user?.email}</span>
-          <Link href="/courses">Cursos</Link>
-          <Link href="/students">Estudiantes</Link>
-          <Link href="/dashboard">Dashboard</Link>
         </div>
       </header>
 
@@ -143,7 +169,7 @@ export default function Assignments() {
           </button>
         </div>
 
-        {error && <p className="error">{error}</p>}
+        {error && <p className="error">{String(error)}</p>}
 
         {loading && <p>Cargando datos...</p>}
 

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { coursesAPI, enrollmentsAPI } from "../utils/api";
+import InPageMenu from "../components/InPageMenu";
 
 export default function Students() {
   const { data: session, status } = useSession();
@@ -89,12 +90,13 @@ export default function Students() {
 
   return (
     <main className="container">
+      <div className="flex justify-end mb-3">
+        <InPageMenu />
+      </div>
       <header className="header">
         <h1>Gestión de Estudiantes</h1>
         <div>
           <span>{session.user?.email}</span>
-          <Link href="/courses">Cursos</Link>
-          <Link href="/dashboard">Dashboard</Link>
         </div>
       </header>
 

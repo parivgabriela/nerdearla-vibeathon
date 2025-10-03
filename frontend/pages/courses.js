@@ -3,6 +3,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { coursesAPI } from "../utils/api";
 import Button from "../components/Button";
+import InPageMenu from "../components/InPageMenu";
 import EmptyState from "../components/EmptyState";
 import Skeleton from "../components/Skeleton";
 import ConfirmModal from "../components/ConfirmModal";
@@ -133,6 +134,9 @@ export default function Courses() {
 
   return (
     <main className="container">
+      <div className="flex justify-end mb-3">
+        <InPageMenu />
+      </div>
       <header className="header">
         <h1>Gestión de Cursos</h1>
       </header>

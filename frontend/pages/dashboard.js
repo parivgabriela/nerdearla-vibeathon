@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { notificationsAPI } from "../utils/api";
+import InPageMenu from "../components/InPageMenu";
 
 export default function Dashboard() {
   const { data: session, status } = useSession();
@@ -91,17 +92,14 @@ export default function Dashboard() {
 
   return (
     <main className="container">
+      <div className="flex justify-end mb-3">
+        <InPageMenu />
+      </div>
       <header className="header">
         <h1>Dashboard</h1>
         <div>
           <span className="muted"> · Rol: {role || "resolviendo..."}</span>
         </div>
-        <nav className="nav">
-          <Link href="/courses" className="btn-link">Cursos</Link>
-          <Link href="/students" className="btn-link">Estudiantes</Link>
-          <Link href="/assignments" className="btn-link">Tareas</Link>
-          <Link href="/notifications" className="btn-link">{`Notificaciones${unreadCount ? ` (${unreadCount})` : ""}`}</Link>
-        </nav>
       </header>
 
       <section>
