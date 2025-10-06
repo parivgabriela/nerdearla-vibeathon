@@ -74,9 +74,16 @@ export default function Assignments() {
   const handleCreate = async (e) => {
     e.preventDefault();
     try {
+      // Validate course_id is present and a valid integer
+      const parsedCourseId = parseInt(formData.course_id, 10);
+      if (!formData.course_id || Number.isNaN(parsedCourseId)) {
+        setError("Debes seleccionar un curso válido.");
+        return;
+      }
+
       const assignmentData = {
         ...formData,
-        course_id: parseInt(formData.course_id),
+        course_id: parsedCourseId,
         max_score: formData.max_score ? parseFloat(formData.max_score) : null,
         due_date: formData.due_date || null,
       };
@@ -175,59 +182,79 @@ export default function Assignments() {
 
         {/* Create Assignment Form */}
         {showCreateForm && (
-          <form onSubmit={handleCreate} className="form">
-            <h3>Crear Tarea</h3>
-            <div>
-              <label>Título:</label>
-              <input
-                type="text"
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                required
-              />
-            </div>
-            <div>
-              <label>Descripción:</label>
-              <textarea
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              />
-            </div>
-            <div>
-              <label>Curso:</label>
-              <select
-                value={formData.course_id}
-                onChange={(e) => setFormData({ ...formData, course_id: e.target.value })}
-                required
-              >
-                <option value="">Seleccionar curso</option>
-                {courses.map((course) => (
-                  <option key={course.id} value={course.id}>
-                    {course.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label>Fecha de Entrega:</label>
-              <input
-                type="datetime-local"
-                value={formData.due_date}
-                onChange={(e) => setFormData({ ...formData, due_date: e.target.value })}
-              />
-            </div>
-            <div>
-              <label>Puntuación Máxima:</label>
-              <input
-                type="number"
-                step="0.1"
-                value={formData.max_score}
-                onChange={(e) => setFormData({ ...formData, max_score: e.target.value })}
-              />
+          <form onSubmit={handleCreate} className="form" aria-labelledby="create-assignment-title">
+            <h3 id="create-assignment-title">Crear Tarea</h3>
+            <p className="form-subtitle">Completa los campos para crear una nueva tarea para un curso.</p>
+            <div className="form-grid">
+              <div className="form-field">
+                <label htmlFor="title">Título</label>
+                <input
+                  id="title"
+                  type="text"
+                  placeholder="Ej: Trabajo Práctico 1"
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  required
+                />
+                <small className="helper">Un nombre breve y claro para la tarea.</small>
+              </div>
+
+              <div className="form-field">
+                <label htmlFor="course_id">Curso</label>
+                <select
+                  id="course_id"
+                  value={formData.course_id}
+                  onChange={(e) => setFormData({ ...formData, course_id: e.target.value })}
+                  required
+                >
+                  <option value="">Seleccionar curso</option>
+                  {courses.map((course) => (
+                    <option key={course.id} value={course.id}>
+                      {course.name}
+                    </option>
+                  ))}
+                </select>
+                <small className="helper">Selecciona el curso al que pertenece la tarea.</small>
+              </div>
+
+              <div className="form-field form-field-full">
+                <label htmlFor="description">Descripción</label>
+                <textarea
+                  id="description"
+                  placeholder="Instrucciones, criterios de evaluación, recursos, etc."
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  rows={4}
+                />
+              </div>
+
+              <div className="form-field">
+                <label htmlFor="due_date">Fecha de Entrega</label>
+                <input
+                  id="due_date"
+                  type="datetime-local"
+                  value={formData.due_date}
+                  onChange={(e) => setFormData({ ...formData, due_date: e.target.value })}
+                />
+                <small className="helper">Opcional. Si se define, se mostrará como vencimiento.</small>
+              </div>
+
+              <div className="form-field">
+                <label htmlFor="max_score">Puntuación Máxima</label>
+                <input
+                  id="max_score"
+                  type="number"
+                  step="0.1"
+                  placeholder="Ej: 10"
+                  value={formData.max_score}
+                  onChange={(e) => setFormData({ ...formData, max_score: e.target.value })}
+                />
+                <small className="helper">Opcional. Valor máximo que puede obtenerse.</small>
+              </div>
             </div>
             <div className="form-actions">
-              <button type="submit">Crear</button>
-              <button type="button" onClick={() => setShowCreateForm(false)}>
+              <button type="submit" className="btn btn-primary">Crear tarea</button>
+              <button type="button" className="btn btn-ghost" onClick={() => setShowCreateForm(false)}>
                 Cancelar
               </button>
             </div>
@@ -236,59 +263,75 @@ export default function Assignments() {
 
         {/* Edit Assignment Form */}
         {editingAssignment && (
-          <form onSubmit={handleUpdate} className="form">
-            <h3>Editar Tarea</h3>
-            <div>
-              <label>Título:</label>
-              <input
-                type="text"
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                required
-              />
-            </div>
-            <div>
-              <label>Descripción:</label>
-              <textarea
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              />
-            </div>
-            <div>
-              <label>Curso:</label>
-              <select
-                value={formData.course_id}
-                onChange={(e) => setFormData({ ...formData, course_id: e.target.value })}
-                required
-              >
-                <option value="">Seleccionar curso</option>
-                {courses.map((course) => (
-                  <option key={course.id} value={course.id}>
-                    {course.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label>Fecha de Entrega:</label>
-              <input
-                type="datetime-local"
-                value={formData.due_date}
-                onChange={(e) => setFormData({ ...formData, due_date: e.target.value })}
-              />
-            </div>
-            <div>
-              <label>Puntuación Máxima:</label>
-              <input
-                type="number"
-                step="0.1"
-                value={formData.max_score}
-                onChange={(e) => setFormData({ ...formData, max_score: e.target.value })}
-              />
+          <form onSubmit={handleUpdate} className="form" aria-labelledby="edit-assignment-title">
+            <h3 id="edit-assignment-title">Editar Tarea</h3>
+            <p className="form-subtitle">Actualiza los datos y guarda los cambios.</p>
+            <div className="form-grid">
+              <div className="form-field">
+                <label htmlFor="title-edit">Título</label>
+                <input
+                  id="title-edit"
+                  type="text"
+                  placeholder="Ej: Trabajo Práctico 1"
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  required
+                />
+              </div>
+
+              <div className="form-field">
+                <label htmlFor="course_id-edit">Curso</label>
+                <select
+                  id="course_id-edit"
+                  value={formData.course_id}
+                  onChange={(e) => setFormData({ ...formData, course_id: e.target.value })}
+                  required
+                >
+                  <option value="">Seleccionar curso</option>
+                  {courses.map((course) => (
+                    <option key={course.id} value={course.id}>
+                      {course.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-field form-field-full">
+                <label htmlFor="description-edit">Descripción</label>
+                <textarea
+                  id="description-edit"
+                  placeholder="Instrucciones, criterios de evaluación, recursos, etc."
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  rows={4}
+                />
+              </div>
+
+              <div className="form-field">
+                <label htmlFor="due_date-edit">Fecha de Entrega</label>
+                <input
+                  id="due_date-edit"
+                  type="datetime-local"
+                  value={formData.due_date}
+                  onChange={(e) => setFormData({ ...formData, due_date: e.target.value })}
+                />
+              </div>
+
+              <div className="form-field">
+                <label htmlFor="max_score-edit">Puntuación Máxima</label>
+                <input
+                  id="max_score-edit"
+                  type="number"
+                  step="0.1"
+                  placeholder="Ej: 10"
+                  value={formData.max_score}
+                  onChange={(e) => setFormData({ ...formData, max_score: e.target.value })}
+                />
+              </div>
             </div>
             <div className="form-actions">
-              <button type="submit">Actualizar</button>
-              <button type="button" onClick={cancelEdit}>
+              <button type="submit" className="btn btn-primary">Actualizar</button>
+              <button type="button" className="btn btn-ghost" onClick={cancelEdit}>
                 Cancelar
               </button>
             </div>
@@ -340,6 +383,111 @@ export default function Assignments() {
           })}
         </div>
       </section>
+      <style jsx>{`
+        .actions button {
+          background: #111827;
+          color: #fff;
+          border: none;
+          padding: 10px 14px;
+          border-radius: 8px;
+          cursor: pointer;
+        }
+        .form {
+          background: transparent;
+          border: 1px solid #e5e7eb;
+          border-radius: 12px;
+          padding: 16px;
+          margin: 16px 0;
+          box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+        }
+        .form h3 {
+          margin: 0 0 4px;
+        }
+        .form-subtitle {
+          margin: 0 0 12px;
+          color: #6b7280;
+          font-size: 0.95rem;
+        }
+        .form-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 12px 16px;
+        }
+        @media (min-width: 720px) {
+          .form-grid {
+            grid-template-columns: 1fr 1fr;
+          }
+          .form-field-full {
+            grid-column: 1 / -1;
+          }
+        }
+        .form-field label {
+          display: block;
+          font-weight: 600;
+          margin-bottom: 6px;
+        }
+        .form-field input,
+        .form-field select,
+        .form-field textarea {
+          width: 100%;
+          border: 1px solid #d1d5db;
+          border-radius: 8px;
+          padding: 10px 12px;
+          font-size: 0.95rem;
+          outline: none;
+          background: #fff;
+        }
+        .form-field input:focus,
+        .form-field select:focus,
+        .form-field textarea:focus {
+          border-color: #2563eb;
+          box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+        .helper {
+          display: block;
+          color: #6b7280;
+          font-size: 0.85rem;
+          margin-top: 6px;
+        }
+        .form-actions {
+          display: flex;
+          gap: 8px;
+          justify-content: flex-end;
+          margin-top: 12px;
+        }
+        .btn {
+          appearance: none;
+          border-radius: 8px;
+          padding: 10px 14px;
+          cursor: pointer;
+          font-weight: 600;
+        }
+        .btn-primary {
+          background: #2563eb;
+          color: #fff;
+          border: 1px solid #2563eb;
+        }
+        .btn-primary:hover {
+          background: #1d4ed8;
+          border-color: #1d4ed8;
+        }
+        .btn-ghost {
+          background: transparent;
+          color: #374151;
+          border: 1px solid #d1d5db;
+        }
+        .btn-ghost:hover {
+          background: #f9fafb;
+        }
+        .assignment-card {
+          border: 1px solid #e5e7eb;
+          border-radius: 10px;
+          padding: 12px;
+        }
+        .assignment-header h5 {
+          margin: 0;
+        }
+      `}</style>
     </main>
   );
 }

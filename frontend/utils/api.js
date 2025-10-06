@@ -99,7 +99,16 @@ export const assignmentsAPI = {
 export const submissionsAPI = {
   // Get all submissions
   getAll: async (params = {}) => {
-    const response = await axios.get(`${API_BASE}/assignments/submissions`, { params });
+    // sanitize query params: remove empty strings and coerce numeric-like values
+    const sanitized = Object.fromEntries(
+      Object.entries(params)
+        .filter(([_, v]) => v !== "" && v !== null && v !== undefined)
+        .map(([k, v]) => {
+          if (typeof v === "string" && /^\d+$/.test(v)) return [k, Number(v)];
+          return [k, v];
+        })
+    );
+    const response = await axios.get(`${API_BASE}/assignments/submissions`, { params: sanitized });
     return response.data;
   },
 
