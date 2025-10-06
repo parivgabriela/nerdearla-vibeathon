@@ -115,18 +115,34 @@ def delete_assignment(assignment_id: int, db: Session = Depends(get_db_session))
 def get_submissions(
     skip: int = 0,
     limit: int = 100,
-    assignment_id: Optional[int] = None,
-    student_id: Optional[int] = None,
+    assignment_id: Optional[str] = None,
+    student_id: Optional[str] = None,
     db: Session = Depends(get_db_session)
 ):
     """Get all submissions with optional filtering."""
+    # Coerce potentially empty string query params to proper types
+    assignment_id_int: Optional[int] = None
+    student_id_int: Optional[int] = None
+
+    if assignment_id is not None and str(assignment_id).strip() != "":
+        try:
+            assignment_id_int = int(assignment_id)
+        except (TypeError, ValueError):
+            raise HTTPException(status_code=422, detail="assignment_id debe ser un entero válido")
+
+    if student_id is not None and str(student_id).strip() != "":
+        try:
+            student_id_int = int(student_id)
+        except (TypeError, ValueError):
+            raise HTTPException(status_code=422, detail="student_id debe ser un entero válido")
+
     query = db.query(models.Submission)
 
-    if assignment_id:
-        query = query.filter(models.Submission.assignment_id == assignment_id)
+    if assignment_id_int is not None:
+        query = query.filter(models.Submission.assignment_id == assignment_id_int)
 
-    if student_id:
-        query = query.filter(models.Submission.student_id == student_id)
+    if student_id_int is not None:
+        query = query.filter(models.Submission.student_id == student_id_int)
 
     submissions = query.offset(skip).limit(limit).all()
     return submissions
